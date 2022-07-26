@@ -1,0 +1,57 @@
+#include "stm32f10x.h"                  // Device header
+#include "Delay.h"
+#include "LED.h"
+#include "Key.h"
+
+//设置两个供按键按下来改变“真、假”的变量：按键“待机”状态标志
+//这两个变量后续用于控制LED的亮灭
+uint8_t key1Flag = 0;
+uint8_t key2Flag = 0;
+
+//这个变量后续用于获取key_GetKeyNum()的返回值（为了减少该函数的调用次数，保证程序的执行效率）
+uint8_t keyTotalFlag = 0;
+
+
+int main()
+{
+	LED_Init();
+	key_Init();
+	
+	while(1)
+	{
+		keyTotalFlag = key_GetKeyNum();
+		
+		//如果按键1按下则改变按键1的待机状态标志（通过“取反”实现）
+		if(keyTotalFlag == 1)
+		{
+			key1Flag = !key1Flag;
+		}
+		
+		//按键2，作用参考按键1
+		if(keyTotalFlag == 2)
+		{
+			key2Flag = !key2Flag;
+		}
+		
+		//如果按键1的待机状态标志为：真，则打开LED1
+		if(key1Flag)
+		{
+			ON_LED1();
+		}
+		//如果按键1的待机状态标志为：假，则关闭LED1
+		else
+		{
+			OFF_LED1();
+		}
+		
+		//LED2，操作同LED1
+		if(key2Flag)
+		{
+			ON_LED2();
+		}
+		else
+		{
+			OFF_LED2();
+		}
+ 	}
+}
